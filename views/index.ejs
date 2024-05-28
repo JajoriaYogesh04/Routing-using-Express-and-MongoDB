@@ -27,9 +27,14 @@
                     <hr>
                     <p><%= chat.created_at.toString().split(" ").slice(0, 4).join(" ") %></p>
                     <p><%= chat.created_at.toString().split(" ")[4] %></p>
+                    <form action="/chats/<%=chat._id%>" method="GET">
+                        <button>Show</button>
+                    </form>
+                    <br>
                     <form action="/chats/<%=chat._id%>?_method=DELETE" method="POST">
                         <button>Delete</button>
                     </form>
+            
                 </div>
                 <br>
             <% } %>

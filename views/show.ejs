@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Show Chat</title>
+    </head>
+    <body>
+        <p>Show id: <b><%= showChat._id %></b></p>
+        <p>From: <b><%= showChat.from %></b></p>
+        <p>To: <b><%= showChat.to %></b></p>
+        <textarea name="showMsg" rows="6" id="showMsg" cols="50"><%= showChat.message %></textarea>
+    </body>
+</html>

@@ -13,7 +13,7 @@ app.use(express.urlencoded({extended: true}));
 app.use(methodOverride("_method"));
 
 async function main(){
-    await mongoose.connect('mongodb://127.0.0.1:27017/whatsapp');
+    await mongoose.connect('mongodb://127.0.0.1:27017/fakewhatsapp');
 }
 
 main().then((res)=>{console.log("Mongoose Connection Successful")})
@@ -66,6 +66,15 @@ app.post("/chats", (req, res)=>{
     newChat.save().then((res)=>{console.log(res)})
     .catch((err)=>{console.log(err)});
     res.redirect("/chats");
+})
+
+//Show Route
+
+app.get("/chats/:id", async (req, res, next)=>{
+    let {id}= req.params;
+    let showChat= await Chat.findById(id);
+    // console.log(showChat);
+    res.render("show.ejs", { showChat })
 })
 
 //Edit Route
