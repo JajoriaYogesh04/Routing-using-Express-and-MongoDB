@@ -5,6 +5,7 @@ const mongoose= require("mongoose");
 const path= require("path");
 const Chat= require("./models/chat.js");
 const methodOverride = require("method-override");
+const ExpressError= require("./ExpressError.js");
 
 app.set("views", path.join(__dirname, "views"));
 app.set("view engine", "ejs");
@@ -48,9 +49,10 @@ app.get("/chats", async (req, res)=>{
 
 //New Route
 app.get("/chats/new", (req,res)=>{
-    console.log("New Route Working");
+    // console.log("New Route Working");
+    throw new ExpressError(404, "Page Not Found");
     // res.send("Upload Form");
-    res.render("new.ejs");
+    // res.render("new.ejs");
 })
 
 //Create Route
@@ -73,6 +75,9 @@ app.post("/chats", (req, res)=>{
 app.get("/chats/:id", async (req, res, next)=>{
     let {id}= req.params;
     let showChat= await Chat.findById(id);
+    if(!showChat){
+        return next(new ExpressError(405, "Chat now Found"))
+    }
     // console.log(showChat);
     res.render("show.ejs", { showChat })
 })
@@ -106,6 +111,13 @@ app.delete("/chats/:id", async (req, res)=>{
 
 app.get("/", (req, res)=>{
     res.send("Express Working");
+})
+
+// Error Handling Middleware
+
+app.use((err, req, res, next)=>{
+    let { status= 500, message="SOME ERROR" }= err;
+    res.status(status).send(message);
 })
 
 app.listen(port,()=>{
