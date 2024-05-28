@@ -62,23 +62,27 @@ app.get("/chats", async (req, res, next)=>{
 app.get("/chats/new", (req,res)=>{
     console.log("New Route Working");
     // throw new ExpressError(404, "Page Not Found");
-    res.send("Upload Form");
+    // res.send("Upload Form");
     res.render("new.ejs");
 })
 
 //Create Route
-app.post("/chats", (req, res)=>{
-    console.log("Ready to create route");
-    let {from, msg, to}=req.body;
-    let newChat= new Chat({
-        from: from,
-        message: msg,
-        to: to,
-        created_at: new Date(),
-    })
-    newChat.save().then((res)=>{console.log(res)})
-    .catch((err)=>{console.log(err)});
-    res.redirect("/chats");
+app.post("/chats", async (req, res, next)=>{
+    try{
+        console.log("Ready to create route");
+        let {from, msg, to}=req.body;
+        let newChat= new Chat({
+            from: from,
+            message: msg,
+            to: to,
+            created_at: new Date(),
+        })
+        await newChat.save();
+        res.redirect("/chats")
+    }
+    catch(err){
+        next(err);
+    }
 })
 
 //Show Route
@@ -140,6 +144,21 @@ app.get("/", (req, res)=>{
 })
 
 // Error Handling Middleware
+
+const handleValidationErr= (err)=>{
+    // console.log("________VALIDATION ERROR________");
+    console.dir(err.message);
+    return err;
+}
+
+app.use((err, req, res, next)=>{
+    console.log(err.name);
+    if(err.name==="ValidationError"){
+        // console.log("________VALIDATION ERROR________");
+        err= handleValidationErr(err);
+    }
+    next(err);
+})
 
 app.use((err, req, res, next)=>{
     let { status= 500, message="SOME ERROR" }= err;
