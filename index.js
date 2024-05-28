@@ -20,6 +20,13 @@ async function main(){
 main().then((res)=>{console.log("Mongoose Connection Successful")})
 .catch((err)=>{console.log(err)});
 
+//WrapAsync
+function asyncWrap(fn){
+    return function(req, res, next){
+        fn(req, res, next).catch((err)=>next(err));
+    };
+}
+
 // let chat1= new Chat({
 //     from: "Yogesh",
 //     to: "Aryan",
@@ -76,20 +83,15 @@ app.post("/chats", (req, res)=>{
 
 //Show Route
 
-app.get("/chats/:id", async (req, res, next)=>{
-    try{
+app.get("/chats/:id", asyncWrap(async (req, res, next)=>{
         let {id}= req.params;
         let showChat= await Chat.findById(id);
         if(!showChat){
-            return next(new ExpressError(405, "Chat now Found"))
+            return next(new ExpressError(405, "Chat Not Found"))
         }
         // console.log(showChat);
         res.render("show.ejs", { showChat })
-    }catch(err){
-        next(err);
-    }
-    
-})
+}))
 
 //Edit Route
 app.get("/chats/:id/edit", async (req, res, next)=>{
